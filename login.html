@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام مدارس أبناء النبلاء - تسجيل الدخول</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+.card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
+input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; text-align: center; }
+button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+button:disabled { background-color: #aaa; }
+.msg { margin-top: 10px; font-size: 14px; }
+.error { color: red; }
+.success { color: green; }
+</style>
+</head>
+<body>
+
+<div class="card">
+<h2>مدارس أبناء النبلاء</h2>
+<p>تسجيل الدخول عبر رمز التحقق (OTP)</p>
+
+<!-- الخطوة 1: طلب البريد الإلكتروني -->
+<div id="step1">
+<input type="email" id="email" placeholder="أدخلي البريد الإلكتروني" required>
+<button onclick="sendOtp()" id="btnSend">إرسال رمز التحقق</button>
+</div>
+
+<!-- الخطوة 2: أدخال الرمز -->
+<div id="step2" style="display: none;">
+<p>أدخلي الرمز المرسل إلى بريدك</p>
+<input type="text" id="otp" placeholder="أدخلي الرمز (OTP)" required>
+<button onclick="verifyOtp()" id="btnVerify">تأكيد الدخول</button>
+</div>
+
+<div id="message" class="msg"></div>
+</div>
+
+<script>
+// قم باستبدال البيانات أدناه ببيانات Supabase الخاصة بمشروعك
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function sendOtp() {
+const email = document.getElementById('email').value;
+const msgDiv = document.getElementById('message');
+if (!email) return alert('يرجى كتابة البريد الإلكتروني');
+
+msgDiv.innerText = 'جاري إرسال الرمز...';
+msgDiv.className = 'msg';
+
+const { error } = await supabase.auth.signInWithOtp({ email: email });
+
+if (error) {
+msgDiv.innerText = 'خطأ: ' + error.message;
+msgDiv.className = 'msg error';
+} else {
+msgDiv.innerText = 'تم إرسال الرمز إلى بريدك الإلكتروني!';
+msgDiv.className = 'msg success';
+document.getElementById('step1').style.display = 'none';
+document.getElementById('step2').style.display = 'block';
+}
+}
+
+async function verifyOtp() {
+const email = document.getElementById('email').value;
+const token = document.getElementById('otp').value;
+const msgDiv = document.getElementById('message');
+
+msgDiv.innerText = 'جاري التحقق...';
+
+const { data, error } = await supabase.auth.verifyOtp({
+email: email,
+token: token,
+type: 'email'
+});
+
+if (error) {
+msgDiv.innerText = 'الرمز غير صحيح أو منتهي الصلاحية';
+msgDiv.className = 'msg error';
+} else {
+msgDiv.innerText = 'تم تسجيل الدخول بنجاح! جاري التوجيه...';
+msgDiv.className = 'msg success';
+setTimeout(() => {
+window.location.href = '/dashboard.html';
+}, 1500);
+}
+}
+</script>
+
+</body>
+</html>
