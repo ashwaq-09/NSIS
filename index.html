@@ -38,58 +38,55 @@ button:disabled { background-color: #aaa; }
 <div id="message" class="msg"></div>
 </div>
 
-<script>
-// قم باستبدال البيانات أدناه ببيانات Supabase الخاصة بمشروعك
-const SUPABASE_URL = 'https://qaqnhbkobcfkbiqqudgn.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_FkhGucZyd_X3Equ6A8u2ng_IBApd...';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+ <script>
+ // الخاصة بـ Supabase تم استبدال البيانات أدناه ببيانات
+   const SUPABASE_URL = 'https://qaqnhbkobcfkbiquqdgn.supabase.co';
+ const SUPABASE_KEY = 'sb_publishable_FkhGucZyd_X3Equ6A8u2ng_IBApd...';
+ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function sendOtp() {
-const email = document.getElementById('email').value;
-const msgDiv = document.getElementById('message');
-if (!email) return alert('يرجى كتابة البريد الإلكتروني');
+ async function sendOtp() {
+ const email = document.getElementById('email').value;
+ const msgDiv = document.getElementById('message');
+ if (!email) return alert('يرجى كتابة البريد الإلكتروني');
 
-msgDiv.innerText = 'جاري إرسال الرمز...';
-msgDiv.className = 'msg';
+  msgDiv.innerText = 'جاري إرسال الرمز...';
+ msgDiv.className = 'msg';
 
-const { error } = await supabase.auth.signInWithOtp({ email: email });
+ const { error } = await supabaseClient.auth.signInWithOtp({ email: email });
 
-if (error) {
-msgDiv.innerText = 'خطأ: ' + error.message;
-msgDiv.className = 'msg error';
-} else {
-msgDiv.innerText = 'تم إرسال الرمز إلى بريدك الإلكتروني!';
-msgDiv.className = 'msg success';
-document.getElementById('step1').style.display = 'none';
-document.getElementById('step2').style.display = 'block';
-}
-}
+ if (error) {
+ msgDiv.innerText = 'خطأ: ' + error.message;
+ msgDiv.className = 'msg error';
+ } else {
+ msgDiv.innerText = 'تم إرسال الرمز إلى بريدك الإلكتروني!';
+ msgDiv.className = 'msg success';
+ document.getElementById('step1').style.display = 'none';
+ document.getElementById('step2').style.display = 'block';
+ }
+ }
 
-async function verifyOtp() {
-const email = document.getElementById('email').value;
-const token = document.getElementById('otp').value;
-const msgDiv = document.getElementById('message');
+ async function verifyOtp() {
+ const email = document.getElementById('email').value;
+ const token = document.getElementById('otp').value;
+ const msgDiv = document.getElementById('message');
 
-msgDiv.innerText = 'جاري التحقق...';
+ msgDiv.innerText = 'جاري التحقق...';
 
-const { data, error } = await supabase.auth.verifyOtp({
-email: email,
-token: token,
-type: 'email'
-});
+ const { data, error } = await supabaseClient.auth.verifyOtp({
+ email: email,
+ token: token,
+ type: 'email'
+ });
 
-if (error) {
-msgDiv.innerText = 'الرمز غير صحيح أو منتهي الصلاحية';
-msgDiv.className = 'msg error';
-} else {
-msgDiv.innerText = 'تم تسجيل الدخول بنجاح! جاري التوجيه...';
-msgDiv.className = 'msg success';
-setTimeout(() => {
-window.location.href = '/dashboard.html';
-}, 1500);
-}
-}
-</script>
-
-</body>
-</html>
+ if (error) {
+ msgDiv.innerText = 'الرمز غير صحيح أو منتهي الصلاحية';
+ msgDiv.className = 'msg error';
+ } else {
+ msgDiv.innerText = 'تم تسجيل الدخول بنجاح! جاري التوجيه...';
+ msgDiv.className = 'msg success';
+ setTimeout(() => {
+ window.location.href = '/dashboard.html';
+ }, 1500);
+ }
+ }
+ </script>
